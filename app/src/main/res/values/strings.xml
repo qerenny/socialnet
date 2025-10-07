@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">SocialNet</string>
+    <string name="app_name">MessengerLab</string>
+    <string name="feed_title">Лента</string>
+    <string name="feed_placeholder">Новости появятся здесь позже</string>
+    <string name="profile_title">Профиль</string>
+    <string name="profile_name_label">Имя</string>
+    <string name="profile_email_label">Email</string>
+    <string name="profile_name_value">Иван Иванов</string>
+    <string name="profile_email_value">ivan@example.com</string>
+    <string name="settings_title">Настройки</string>
+    <string name="dark_theme_label">Тёмная тема</string>
 </resources>
