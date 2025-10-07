@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SocialNet"
+rootProject.name = "MessengerLab"
 include(":app")
