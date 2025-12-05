@@ -5,14 +5,25 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
-import com.example.messengerlab.R
+import androidx.fragment.app.viewModels
 import com.example.messengerlab.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: ProfileViewModel by viewModels()
+
+    private val statusOptions = listOf(
+        "Online",
+        "Sleeping",
+        "Working",
+        "Doing my best",
+        "Offline"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,8 +43,68 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
-        binding.profileName.text = getString(R.string.profile_name_value)
-        binding.profileEmail.text = getString(R.string.profile_email_value)
+
+        setupSpinner()
+        setupListeners()
+        observeViewModel()
+    }
+
+    private fun setupSpinner() {
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            statusOptions
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.profileStatusSpinner.adapter = adapter
+    }
+
+    private fun setupListeners() {
+        binding.btnEditProfile.setOnClickListener {
+            viewModel.setEditing(true)
+        }
+
+        binding.btnSaveProfile.setOnClickListener {
+            val name = binding.profileNameInput.text.toString()
+            val bio = binding.profileBioInput.text.toString()
+            val statusIndex = binding.profileStatusSpinner.selectedItemPosition
+
+            viewModel.saveProfile(name, bio, statusIndex)
+            viewModel.setEditing(false)
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.name.observe(viewLifecycleOwner) { name ->
+            // Only update text if it's different and NOT currently editing
+            // (although with the Save button flow, we usually only update from VM on start or Save)
+            // But to support rotation where Fragment is recreated but VM is not:
+            // If VM has data, we put it in field.
+            if (binding.profileNameInput.text.toString() != name) {
+                binding.profileNameInput.setText(name)
+            }
+        }
+
+        viewModel.bio.observe(viewLifecycleOwner) { bio ->
+            if (binding.profileBioInput.text.toString() != bio) {
+                binding.profileBioInput.setText(bio)
+            }
+        }
+
+        viewModel.statusIndex.observe(viewLifecycleOwner) { index ->
+            if (binding.profileStatusSpinner.selectedItemPosition != index) {
+                binding.profileStatusSpinner.setSelection(index)
+            }
+        }
+
+        viewModel.isEditing.observe(viewLifecycleOwner) { isEditing ->
+            binding.profileNameInput.isEnabled = isEditing
+            binding.profileBioInput.isEnabled = isEditing
+            binding.profileStatusSpinner.isEnabled = isEditing
+
+            binding.btnEditProfile.visibility = if (isEditing) View.GONE else View.VISIBLE
+            binding.btnSaveProfile.visibility = if (isEditing) View.VISIBLE else View.GONE
+        }
     }
 
     override fun onStart() {
