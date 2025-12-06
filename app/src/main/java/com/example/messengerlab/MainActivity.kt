@@ -1,12 +1,12 @@
 package com.example.messengerlab
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.example.messengerlab.data.UserPreferences
 import com.example.messengerlab.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -14,11 +14,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val isDarkModeEnabled = prefs.getBoolean(KEY_DARK_MODE, false)
+        // Apply theme before super.onCreate and setContentView
+        val userPreferences = UserPreferences(this)
+        val isDarkModeEnabled = userPreferences.isDarkMode
         AppCompatDelegate.setDefaultNightMode(
             if (isDarkModeEnabled) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
         )
+
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -55,6 +57,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        // Deprecated constants kept for compatibility if needed, but we use UserPreferences now
         const val PREFS_NAME = "settings"
         const val KEY_DARK_MODE = "dark_mode"
         private const val TAG = "MainActivity"

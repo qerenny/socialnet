@@ -1,18 +1,45 @@
 package com.example.messengerlab.profile
 
+import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.TextView
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import com.example.messengerlab.R
 import com.example.messengerlab.databinding.FragmentProfileBinding
+import java.text.DateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: ProfileViewModel by viewModels()
+
+    private val statusOptions = listOf(
+        "Online",
+        "Sleeping",
+        "Working",
+        "Doing my best",
+        "Offline"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,8 +59,176 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
-        binding.profileName.text = getString(R.string.profile_name_value)
-        binding.profileEmail.text = getString(R.string.profile_email_value)
+
+        setupMenu()
+        setupSpinner()
+        setupListeners()
+        observeViewModel()
+    }
+
+    private fun setupMenu() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.profile_menu, menu)
+            }
+
+            override fun onPrepareMenu(menu: Menu) {
+                val isEditing = viewModel.isEditing.value == true
+                menu.findItem(R.id.action_edit).isVisible = !isEditing
+                menu.findItem(R.id.action_save).isVisible = isEditing
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.action_edit -> {
+                        viewModel.setEditing(true)
+                        true
+                    }
+                    R.id.action_save -> {
+                        viewModel.saveProfile()
+                        viewModel.setEditing(false)
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun setupSpinner() {
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            statusOptions
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.profileStatusSpinner.adapter = adapter
+    }
+
+    private fun setupListeners() {
+        // Name Listener
+        binding.profileNameInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.onNameChanged(s.toString())
+            }
+        })
+
+        // Bio Listener
+        binding.profileBioInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.onBioChanged(s.toString())
+            }
+        })
+
+        // Username Listener
+        binding.profileUsernameInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.onUsernameChanged(s.toString())
+            }
+        })
+
+        // Spinner Listener
+        binding.profileStatusSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                viewModel.onStatusChanged(position)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        // Birthday Listener (DatePicker)
+        binding.profileBirthdayValue.setOnClickListener {
+            if (viewModel.isEditing.value == true) {
+                showDatePicker()
+            }
+        }
+    }
+
+    private fun showDatePicker() {
+        val calendar = Calendar.getInstance()
+        val currentBirthday = viewModel.birthday.value ?: 0L
+        if (currentBirthday > 0) {
+            calendar.timeInMillis = currentBirthday
+        }
+
+        DatePickerDialog(
+            requireContext(),
+            { _, year, month, dayOfMonth ->
+                calendar.set(year, month, dayOfMonth)
+                viewModel.onBirthdayChanged(calendar.timeInMillis)
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
+    }
+
+    private fun observeViewModel() {
+        // Observe Edit Mode to invalidate Menu and toggle fields
+        viewModel.isEditing.observe(viewLifecycleOwner) { isEditing ->
+            requireActivity().invalidateOptionsMenu()
+
+            binding.profileNameInput.isEnabled = isEditing
+            binding.profileBioInput.isEnabled = isEditing
+            binding.profileUsernameInput.isEnabled = isEditing
+            binding.profileStatusSpinner.isEnabled = isEditing
+            // Birthday is "enabled" via click listener check
+        }
+
+        viewModel.name.observe(viewLifecycleOwner) { name ->
+            if (binding.profileNameInput.text.toString() != name) {
+                binding.profileNameInput.setText(name)
+            }
+            updateInitials(name)
+        }
+
+        viewModel.bio.observe(viewLifecycleOwner) { bio ->
+            if (binding.profileBioInput.text.toString() != bio) {
+                binding.profileBioInput.setText(bio)
+            }
+        }
+
+        viewModel.username.observe(viewLifecycleOwner) { username ->
+             if (binding.profileUsernameInput.text.toString() != username) {
+                binding.profileUsernameInput.setText(username)
+            }
+        }
+
+        viewModel.birthday.observe(viewLifecycleOwner) { birthday ->
+            binding.profileBirthdayValue.text = if (birthday > 0) {
+                formatDate(birthday)
+            } else {
+                "" // Or a placeholder like "Set Birthday"
+            }
+        }
+
+        viewModel.statusIndex.observe(viewLifecycleOwner) { index ->
+            if (binding.profileStatusSpinner.selectedItemPosition != index) {
+                binding.profileStatusSpinner.setSelection(index)
+            }
+        }
+    }
+
+    private fun updateInitials(name: String) {
+        val initials = name.split(" ")
+            .filter { it.isNotEmpty() }
+            .take(2)
+            .mapNotNull { it.firstOrNull() }
+            .joinToString("")
+            .uppercase()
+        binding.profileAvatarInitials.text = initials
+    }
+
+    private fun formatDate(timestamp: Long): String {
+        val date = Date(timestamp)
+        val format = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault())
+        return format.format(date)
     }
 
     override fun onStart() {
