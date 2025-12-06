@@ -6,19 +6,12 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.TextView
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import com.example.messengerlab.R
 import com.example.messengerlab.databinding.FragmentProfileBinding
 import java.text.DateFormat
@@ -60,40 +53,27 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
 
-        setupMenu()
+        setupToolbar()
         setupSpinner()
         setupListeners()
         observeViewModel()
     }
 
-    private fun setupMenu() {
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.profile_menu, menu)
-            }
-
-            override fun onPrepareMenu(menu: Menu) {
-                val isEditing = viewModel.isEditing.value == true
-                menu.findItem(R.id.action_edit).isVisible = !isEditing
-                menu.findItem(R.id.action_save).isVisible = isEditing
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.action_edit -> {
-                        viewModel.setEditing(true)
-                        true
-                    }
-                    R.id.action_save -> {
-                        viewModel.saveProfile()
-                        viewModel.setEditing(false)
-                        true
-                    }
-                    else -> false
+    private fun setupToolbar() {
+        binding.profileToolbar.setOnMenuItemClickListener { menuItem ->
+             when (menuItem.itemId) {
+                R.id.action_edit -> {
+                    viewModel.setEditing(true)
+                    true
                 }
+                R.id.action_save -> {
+                    viewModel.saveProfile()
+                    viewModel.setEditing(false)
+                    true
+                }
+                else -> false
             }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        }
     }
 
     private fun setupSpinner() {
@@ -172,7 +152,14 @@ class ProfileFragment : Fragment() {
     private fun observeViewModel() {
         // Observe Edit Mode to invalidate Menu and toggle fields
         viewModel.isEditing.observe(viewLifecycleOwner) { isEditing ->
-            requireActivity().invalidateOptionsMenu()
+            val menu = binding.profileToolbar.menu
+            val editItem = menu.findItem(R.id.action_edit)
+            val saveItem = menu.findItem(R.id.action_save)
+
+            if (editItem != null && saveItem != null) {
+                editItem.isVisible = !isEditing
+                saveItem.isVisible = isEditing
+            }
 
             binding.profileNameInput.isEnabled = isEditing
             binding.profileBioInput.isEnabled = isEditing

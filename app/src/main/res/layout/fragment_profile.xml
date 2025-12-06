@@ -1,132 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".profile.ProfileFragment">
 
-    <LinearLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/profile_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center_horizontal">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorSurface"
+        android:elevation="4dp"
+        app:title="@string/profile_title"
+        app:menu="@menu/profile_menu" />
 
-        <!-- Avatar Placeholder -->
-        <FrameLayout
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_marginBottom="16dp">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/profile_avatar_background"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/circle_avatar_background"
-                android:contentDescription="@null" />
-
-            <TextView
-                android:id="@+id/profile_avatar_initials"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnPrimaryContainer"
-                tools:text="ИИ" />
-        </FrameLayout>
-
-        <!-- Name (Centered) -->
-        <EditText
-            android:id="@+id/profile_name_input"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:hint="@string/profile_name_label"
-            android:enabled="false"
-            android:gravity="center"
-            android:textAlignment="center"
-            android:background="@android:color/transparent"
-            android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-            android:textStyle="bold"
-            tools:text="Иван Иванов"/>
-
-        <!-- Status (Centered) -->
-        <Spinner
-            android:id="@+id/profile_status_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:enabled="false"
-            android:gravity="center"
-            android:textAlignment="center"
-            android:minHeight="48dp" />
-
-        <!-- Info Fields -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="32dp">
+            android:padding="24dp"
+            android:gravity="center_horizontal">
 
-            <!-- Bio -->
+            <!-- Avatar Placeholder -->
+            <FrameLayout
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/profile_avatar_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/circle_avatar_background"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:id="@+id/profile_avatar_initials"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="40sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnPrimaryContainer"
+                    tools:text="ИИ" />
+            </FrameLayout>
+
+            <!-- Name (Centered) -->
             <EditText
-                android:id="@+id/profile_bio_input"
-                android:layout_width="match_parent"
+                android:id="@+id/profile_name_input"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:minLines="1"
+                android:inputType="textPersonName"
+                android:hint="@string/profile_name_label"
                 android:enabled="false"
+                android:gravity="center"
+                android:textAlignment="center"
                 android:background="@android:color/transparent"
-                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                tools:text="судьба, смерть и страдание"/>
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                android:textStyle="bold"
+                tools:text="Иван Иванов"/>
 
-            <TextView
+            <!-- Status (Centered) -->
+            <Spinner
+                android:id="@+id/profile_status_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/profile_bio_label"
-                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                android:alpha="0.7"/>
-
-            <!-- Username -->
-            <EditText
-                android:id="@+id/profile_username_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:inputType="text"
+                android:layout_marginTop="4dp"
                 android:enabled="false"
-                android:background="@android:color/transparent"
-                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                android:textColor="?attr/colorError"
-                tools:text="@qerenny"/>
+                android:gravity="center"
+                android:textAlignment="center"
+                android:minHeight="48dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/profile_username_label"
-                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                android:alpha="0.7"/>
-
-            <!-- Birthday -->
-            <TextView
-                android:id="@+id/profile_birthday_value"
+            <!-- Info Fields -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="4dp"
-                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                tools:text="Nov 18, 2003 (22 years old)"/>
+                android:orientation="vertical"
+                android:layout_marginTop="32dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/profile_birthday_label"
-                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                android:alpha="0.7"/>
+                <!-- Bio -->
+                <EditText
+                    android:id="@+id/profile_bio_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:minLines="1"
+                    android:enabled="false"
+                    android:background="@android:color/transparent"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    tools:text="судьба, смерть и страдание"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/profile_bio_label"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:alpha="0.7"/>
+
+                <!-- Username -->
+                <EditText
+                    android:id="@+id/profile_username_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:inputType="text"
+                    android:enabled="false"
+                    android:background="@android:color/transparent"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textColor="?attr/colorError"
+                    tools:text="@qerenny"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/profile_username_label"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:alpha="0.7"/>
+
+                <!-- Birthday -->
+                <TextView
+                    android:id="@+id/profile_birthday_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="4dp"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    tools:text="Nov 18, 2003 (22 years old)"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/profile_birthday_label"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:alpha="0.7"/>
+
+            </LinearLayout>
 
         </LinearLayout>
-
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</LinearLayout>
