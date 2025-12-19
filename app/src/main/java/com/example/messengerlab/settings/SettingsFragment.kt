@@ -40,11 +40,12 @@ class SettingsFragment : Fragment() {
             if (binding.themeSwitch.isChecked != isDarkMode) {
                 binding.themeSwitch.isChecked = isDarkMode
             }
-            // Apply theme only if it's different from current system setting might be good,
-            // but setting default night mode is idempotent enough usually.
-            // However, calling this in observer might trigger re-creation if not careful,
-            // but here we just set the delegate default.
-            val mode = if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+                    }
+
+        binding.themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.setDarkMode(isChecked)
+
+            val mode = if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
             if (AppCompatDelegate.getDefaultNightMode() != mode) {
                 AppCompatDelegate.setDefaultNightMode(mode)
             }
