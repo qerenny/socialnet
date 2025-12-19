@@ -73,7 +73,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    // Persist Draft State
     fun saveProfile() {
         val currentName = _name.value ?: ""
         val currentBio = _bio.value ?: ""

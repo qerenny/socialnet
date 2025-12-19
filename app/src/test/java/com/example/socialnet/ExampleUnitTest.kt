@@ -1,4 +1,4 @@
-package com.example.socialnet
+package com.example.messengerlab
 
 import org.junit.Test
 

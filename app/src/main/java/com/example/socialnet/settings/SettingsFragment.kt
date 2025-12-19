@@ -40,7 +40,7 @@ class SettingsFragment : Fragment() {
             if (binding.themeSwitch.isChecked != isDarkMode) {
                 binding.themeSwitch.isChecked = isDarkMode
             }
-                    }
+        }
 
         binding.themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.setDarkMode(isChecked)
@@ -49,10 +49,6 @@ class SettingsFragment : Fragment() {
             if (AppCompatDelegate.getDefaultNightMode() != mode) {
                 AppCompatDelegate.setDefaultNightMode(mode)
             }
-        }
-
-        binding.themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.setDarkMode(isChecked)
         }
     }
 
