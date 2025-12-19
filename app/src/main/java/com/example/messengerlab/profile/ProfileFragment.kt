@@ -1,6 +1,7 @@
 package com.example.messengerlab.profile
 
 import android.app.DatePickerDialog
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.messengerlab.R
@@ -34,6 +36,9 @@ class ProfileFragment : Fragment() {
         "Offline"
     )
 
+    // Переменная для сохранения стандартного фона Spinner
+    private var defaultSpinnerBackground: Drawable? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
@@ -53,6 +58,10 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
 
+        // Сохраняем стандартный фон Spinner сразу после создания View, до того, как мы его отключим
+        // ВАЖНО: getBackground() нужно вызывать после инфлейта, в onViewCreated.
+        defaultSpinnerBackground = binding.profileStatusSpinner.background
+
         setupToolbar()
         setupSpinner()
         setupListeners()
@@ -61,7 +70,7 @@ class ProfileFragment : Fragment() {
 
     private fun setupToolbar() {
         binding.profileToolbar.setOnMenuItemClickListener { menuItem ->
-             when (menuItem.itemId) {
+            when (menuItem.itemId) {
                 R.id.action_edit -> {
                     viewModel.setEditing(true)
                     true
@@ -79,7 +88,7 @@ class ProfileFragment : Fragment() {
     private fun setupSpinner() {
         val adapter = ArrayAdapter(
             requireContext(),
-            android.R.layout.simple_spinner_item,
+            R.layout.custom_spinner_item,
             statusOptions
         )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -117,7 +126,10 @@ class ProfileFragment : Fragment() {
         // Spinner Listener
         binding.profileStatusSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                viewModel.onStatusChanged(position)
+                // Изменение статуса разрешено только в режиме редактирования
+                if (viewModel.isEditing.value == true) {
+                    viewModel.onStatusChanged(position)
+                }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
@@ -164,8 +176,19 @@ class ProfileFragment : Fragment() {
             binding.profileNameInput.isEnabled = isEditing
             binding.profileBioInput.isEnabled = isEditing
             binding.profileUsernameInput.isEnabled = isEditing
+
+            // 1. Управляем isEnabled
             binding.profileStatusSpinner.isEnabled = isEditing
-            // Birthday is "enabled" via click listener check
+
+            // 2. Управляем фоном для скрытия/отображения стрелки
+            if (isEditing) {
+                // Режим редактирования: восстанавливаем стандартный фон (со стрелкой)
+                binding.profileStatusSpinner.background = defaultSpinnerBackground
+            } else {
+                // Режим просмотра: устанавливаем прозрачный фон (скрываем стрелку)
+                // Если вы используете AndroidX, ContextCompat предпочтительнее.
+                binding.profileStatusSpinner.background = ContextCompat.getDrawable(requireContext(), android.R.color.transparent)
+            }
         }
 
         viewModel.name.observe(viewLifecycleOwner) { name ->
@@ -182,7 +205,7 @@ class ProfileFragment : Fragment() {
         }
 
         viewModel.username.observe(viewLifecycleOwner) { username ->
-             if (binding.profileUsernameInput.text.toString() != username) {
+            if (binding.profileUsernameInput.text.toString() != username) {
                 binding.profileUsernameInput.setText(username)
             }
         }
@@ -191,7 +214,7 @@ class ProfileFragment : Fragment() {
             binding.profileBirthdayValue.text = if (birthday > 0) {
                 formatDate(birthday)
             } else {
-                "" // Or a placeholder like "Set Birthday"
+                ""
             }
         }
 

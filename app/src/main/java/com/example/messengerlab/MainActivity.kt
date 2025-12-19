@@ -14,7 +14,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Apply theme before super.onCreate and setContentView
         val userPreferences = UserPreferences(this)
         val isDarkModeEnabled = userPreferences.isDarkMode
         AppCompatDelegate.setDefaultNightMode(
@@ -57,9 +56,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        // Deprecated constants kept for compatibility if needed, but we use UserPreferences now
-        const val PREFS_NAME = "settings"
-        const val KEY_DARK_MODE = "dark_mode"
         private const val TAG = "MainActivity"
     }
 }

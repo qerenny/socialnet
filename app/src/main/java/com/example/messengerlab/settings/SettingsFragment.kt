@@ -36,21 +36,15 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
 
-        // Observe ViewModel state to update UI
         viewModel.isDarkMode.observe(viewLifecycleOwner) { isDarkMode ->
             if (binding.themeSwitch.isChecked != isDarkMode) {
                 binding.themeSwitch.isChecked = isDarkMode
             }
-            // Note: We do NOT call setDefaultNightMode here to avoid infinite recreation loops.
-            // The theme is applied in MainActivity.onCreate or in the listener below.
-        }
+                    }
 
-        // Listener handles User Interaction
         binding.themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            // 1. Update ViewModel (which updates Persistence)
             viewModel.setDarkMode(isChecked)
 
-            // 2. Apply Theme immediately
             val mode = if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
             if (AppCompatDelegate.getDefaultNightMode() != mode) {
                 AppCompatDelegate.setDefaultNightMode(mode)

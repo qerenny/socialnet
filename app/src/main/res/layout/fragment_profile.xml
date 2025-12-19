@@ -63,6 +63,7 @@
                 android:textAlignment="center"
                 android:background="@android:color/transparent"
                 android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                android:textColor="?attr/colorOnSurface"
                 android:textStyle="bold"
                 tools:text="Иван Иванов"/>
 
@@ -75,7 +76,8 @@
                 android:enabled="false"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:minHeight="48dp" />
+                android:minHeight="48dp"
+                android:background="@android:color/transparent"  />
 
             <!-- Info Fields -->
             <LinearLayout
@@ -91,10 +93,12 @@
                     android:layout_height="wrap_content"
                     android:inputType="textMultiLine"
                     android:minLines="1"
+                    android:hint="Тут будет твое описание"
                     android:enabled="false"
                     android:background="@android:color/transparent"
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                    tools:text="судьба, смерть и страдание"/>
+                    android:textColor="?attr/colorOnSurface"
+                    tools:text="My mother told me..."/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -113,8 +117,8 @@
                     android:enabled="false"
                     android:background="@android:color/transparent"
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                    android:textColor="?attr/colorError"
-                    tools:text="@qerenny"/>
+                    android:textColor="#7130E7"
+                    tools:text="@mothername"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -132,7 +136,8 @@
                     android:paddingTop="8dp"
                     android:paddingBottom="4dp"
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                    tools:text="Nov 18, 2003 (22 years old)"/>
+                    android:hint="Тут будет твой день рождения"
+                    />
 
                 <TextView
                     android:layout_width="wrap_content"
