@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -48,6 +49,17 @@ class SettingsFragment : Fragment() {
             val mode = if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
             if (AppCompatDelegate.getDefaultNightMode() != mode) {
                 AppCompatDelegate.setDefaultNightMode(mode)
+            }
+        }
+
+        binding.btnRefreshFeed.setOnClickListener {
+            viewModel.refreshFeed()
+        }
+
+        viewModel.refreshStatus.observe(viewLifecycleOwner) { status ->
+            if (status != null) {
+                Toast.makeText(context, status, Toast.LENGTH_SHORT).show()
+                viewModel.clearRefreshStatus()
             }
         }
     }
