@@ -50,6 +50,10 @@ class SettingsFragment : Fragment() {
                 AppCompatDelegate.setDefaultNightMode(mode)
             }
         }
+
+        binding.themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.setDarkMode(isChecked)
+        }
     }
 
     override fun onStart() {

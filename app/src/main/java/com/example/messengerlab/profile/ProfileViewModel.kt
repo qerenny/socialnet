@@ -11,7 +11,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     private val userPreferences = UserPreferences(application)
 
-    // These LiveData hold the current state (including unsaved drafts)
     private val _name = MutableLiveData<String>()
     val name: LiveData<String> = _name
 

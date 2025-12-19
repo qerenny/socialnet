@@ -36,7 +36,6 @@ class ProfileFragment : Fragment() {
         "Offline"
     )
 
-    // Переменная для сохранения стандартного фона Spinner
     private var defaultSpinnerBackground: Drawable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,9 +56,6 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
-
-        // Сохраняем стандартный фон Spinner сразу после создания View, до того, как мы его отключим
-        // ВАЖНО: getBackground() нужно вызывать после инфлейта, в onViewCreated.
         defaultSpinnerBackground = binding.profileStatusSpinner.background
 
         setupToolbar()
@@ -96,7 +92,6 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        // Name Listener
         binding.profileNameInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -105,7 +100,6 @@ class ProfileFragment : Fragment() {
             }
         })
 
-        // Bio Listener
         binding.profileBioInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
