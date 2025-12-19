@@ -1,11 +1,11 @@
-package com.example.messengerlab.settings
+package com.example.socialnet.settings
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.messengerlab.data.UserPreferences
+import com.example.socialnet.data.UserPreferences
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 

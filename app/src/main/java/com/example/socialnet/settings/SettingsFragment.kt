@@ -1,4 +1,4 @@
-package com.example.messengerlab.settings
+package com.example.socialnet.settings
 
 import android.os.Bundle
 import android.util.Log
@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.messengerlab.databinding.FragmentSettingsBinding
+import com.example.socialnet.databinding.FragmentSettingsBinding
 
 class SettingsFragment : Fragment() {
 
@@ -40,7 +40,7 @@ class SettingsFragment : Fragment() {
             if (binding.themeSwitch.isChecked != isDarkMode) {
                 binding.themeSwitch.isChecked = isDarkMode
             }
-                    }
+        }
 
         binding.themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.setDarkMode(isChecked)
@@ -49,10 +49,6 @@ class SettingsFragment : Fragment() {
             if (AppCompatDelegate.getDefaultNightMode() != mode) {
                 AppCompatDelegate.setDefaultNightMode(mode)
             }
-        }
-
-        binding.themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.setDarkMode(isChecked)
         }
     }
 

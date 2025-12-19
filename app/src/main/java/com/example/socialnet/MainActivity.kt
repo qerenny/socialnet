@@ -1,4 +1,4 @@
-package com.example.messengerlab
+package com.example.socialnet
 
 import android.os.Bundle
 import android.util.Log
@@ -6,8 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.example.messengerlab.data.UserPreferences
-import com.example.messengerlab.databinding.ActivityMainBinding
+import com.example.socialnet.data.UserPreferences
+import com.example.socialnet.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 

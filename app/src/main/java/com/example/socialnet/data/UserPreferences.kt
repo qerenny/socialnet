@@ -1,4 +1,4 @@
-package com.example.messengerlab.data
+package com.example.socialnet.data
 
 import android.content.Context
 import android.content.SharedPreferences

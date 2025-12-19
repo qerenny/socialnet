@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MessengerLab</string>
+    <string name="app_name">socialnet</string>
     <string name="feed_title">Лента</string>
     <string name="feed_placeholder">Новости появятся здесь позже</string>
     <string name="profile_title">Профиль</string>

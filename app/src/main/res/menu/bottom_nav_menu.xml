@@ -2,14 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/feedFragment"
-        android:icon="@drawable/ic_home"
-        android:title="@string/feed_title" />
+        android:title="@string/feed_title"
+        android:icon="@drawable/ic_home" />
 
     <item
         android:id="@+id/profileFragment"
-        android:icon="@drawable/ic_person"
-        android:title="@string/profile_title" />
-
+        android:title="@string/profile_title"
+        android:icon="@drawable/ic_person" />
     <item
         android:id="@+id/settingsFragment"
         android:icon="@drawable/ic_settings"

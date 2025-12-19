@@ -1,11 +1,11 @@
-package com.example.messengerlab.profile
+package com.example.socialnet.profile
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.messengerlab.data.UserPreferences
+import com.example.socialnet.data.UserPreferences
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -73,7 +73,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    // Persist Draft State
     fun saveProfile() {
         val currentName = _name.value ?: ""
         val currentBio = _bio.value ?: ""

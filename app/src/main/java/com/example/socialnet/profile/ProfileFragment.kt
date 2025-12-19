@@ -1,4 +1,4 @@
-package com.example.messengerlab.profile
+package com.example.socialnet.profile
 
 import android.app.DatePickerDialog
 import android.graphics.drawable.Drawable
@@ -14,8 +14,8 @@ import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.messengerlab.R
-import com.example.messengerlab.databinding.FragmentProfileBinding
+import com.example.socialnet.R
+import com.example.socialnet.databinding.FragmentProfileBinding
 import java.text.DateFormat
 import java.util.Calendar
 import java.util.Date
@@ -56,6 +56,7 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
+
         defaultSpinnerBackground = binding.profileStatusSpinner.background
 
         setupToolbar()
@@ -108,7 +109,6 @@ class ProfileFragment : Fragment() {
             }
         })
 
-        // Username Listener
         binding.profileUsernameInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -117,10 +117,8 @@ class ProfileFragment : Fragment() {
             }
         })
 
-        // Spinner Listener
         binding.profileStatusSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                // Изменение статуса разрешено только в режиме редактирования
                 if (viewModel.isEditing.value == true) {
                     viewModel.onStatusChanged(position)
                 }
@@ -128,7 +126,6 @@ class ProfileFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        // Birthday Listener (DatePicker)
         binding.profileBirthdayValue.setOnClickListener {
             if (viewModel.isEditing.value == true) {
                 showDatePicker()
@@ -156,7 +153,6 @@ class ProfileFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        // Observe Edit Mode to invalidate Menu and toggle fields
         viewModel.isEditing.observe(viewLifecycleOwner) { isEditing ->
             val menu = binding.profileToolbar.menu
             val editItem = menu.findItem(R.id.action_edit)
@@ -171,16 +167,11 @@ class ProfileFragment : Fragment() {
             binding.profileBioInput.isEnabled = isEditing
             binding.profileUsernameInput.isEnabled = isEditing
 
-            // 1. Управляем isEnabled
             binding.profileStatusSpinner.isEnabled = isEditing
 
-            // 2. Управляем фоном для скрытия/отображения стрелки
             if (isEditing) {
-                // Режим редактирования: восстанавливаем стандартный фон (со стрелкой)
                 binding.profileStatusSpinner.background = defaultSpinnerBackground
             } else {
-                // Режим просмотра: устанавливаем прозрачный фон (скрываем стрелку)
-                // Если вы используете AndroidX, ContextCompat предпочтительнее.
                 binding.profileStatusSpinner.background = ContextCompat.getDrawable(requireContext(), android.R.color.transparent)
             }
         }
