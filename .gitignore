@@ -141,3 +141,6 @@ hs_err_pid*
 
 # Cache of project
 .gradletasknamecache
+
+# Android SDK
+android-sdk/

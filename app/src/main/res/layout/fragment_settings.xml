@@ -31,6 +31,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/dark_theme_label"
                 app:useMaterialThemeColors="true" />
+
+            <Button
+                android:id="@+id/btnRefreshFeed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Refresh Feed" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

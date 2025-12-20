@@ -5,7 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.socialnet.SocialNetApplication
 import com.example.socialnet.databinding.FragmentFeedBinding
 
 class FeedFragment : Fragment() {
@@ -13,58 +17,59 @@ class FeedFragment : Fragment() {
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate")
+    private val viewModel: FeedViewModel by viewModels {
+        FeedViewModelFactory((requireActivity().application as SocialNetApplication).repository)
     }
+
+    private lateinit var adapter: FeedAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d(TAG, "onCreateView")
         _binding = FragmentFeedBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "onViewCreated")
+
+        setupRecyclerView()
+        setupSwipeRefresh()
+        observeViewModel()
     }
 
-    override fun onStart() {
-        super.onStart()
-        Log.d(TAG, "onStart")
+    private fun setupRecyclerView() {
+        adapter = FeedAdapter()
+        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.adapter = adapter
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "onResume")
+    private fun setupSwipeRefresh() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.loadMessages()
+        }
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.d(TAG, "onPause")
-    }
+    private fun observeViewModel() {
+        viewModel.messages.observe(viewLifecycleOwner) { messages ->
+            adapter.submitList(messages)
+        }
 
-    override fun onStop() {
-        super.onStop()
-        Log.d(TAG, "onStop")
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.swipeRefreshLayout.isRefreshing = isLoading
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { errorMsg ->
+            if (errorMsg != null) {
+                Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d(TAG, "onDestroyView")
         _binding = null
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "onDestroy")
-    }
-
-    companion object {
-        private const val TAG = "FeedFragment"
     }
 }
