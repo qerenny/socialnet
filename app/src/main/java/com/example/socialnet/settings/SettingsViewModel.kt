@@ -36,7 +36,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun refreshFeed() {
         viewModelScope.launch {
             try {
-                repository.getMessages() // This triggers API call and DB update
+                repository.getMessages()
                 _refreshStatus.value = "Feed refreshed successfully"
             } catch (e: Exception) {
                 _refreshStatus.value = "Failed to refresh feed: ${e.message}"
