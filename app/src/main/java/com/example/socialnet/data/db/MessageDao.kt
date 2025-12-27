@@ -21,4 +21,7 @@ interface MessageDao {
         deleteAll()
         insertAll(messages)
     }
+
+    @Query("UPDATE messages SET isLiked = :isLiked WHERE id = :id")
+    suspend fun updateLikeStatus(id: Int, isLiked: Boolean)
 }
