@@ -20,7 +20,9 @@ class SocialNetApplication : Application() {
             applicationContext,
             AppDatabase::class.java,
             "socialnet_db"
-        ).build()
+        )
+        .fallbackToDestructiveMigration()
+        .build()
     }
 
     private val apiService by lazy {
