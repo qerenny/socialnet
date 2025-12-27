@@ -37,6 +37,25 @@ class FeedViewModel(private val repository: MessageRepository) : ViewModel() {
             }
         }
     }
+
+    fun toggleLike(messageId: Int) {
+        val currentList = _messages.value ?: return
+        val message = currentList.find { it.id == messageId } ?: return
+
+        viewModelScope.launch {
+            repository.toggleLike(messageId, message.isLiked)
+
+            // Optimistically update the UI or reload
+            // Ideally we would observe a DB stream, but for now let's update the live data manually or reload
+            // To be simple and robust: reload from DB (which is fast) or update list locally
+
+            // Local update for immediate feedback
+            val updatedList = currentList.map {
+                if (it.id == messageId) it.copy(isLiked = !message.isLiked) else it
+            }
+            _messages.value = updatedList
+        }
+    }
 }
 
 class FeedViewModelFactory(private val repository: MessageRepository) : ViewModelProvider.Factory {

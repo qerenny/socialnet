@@ -41,7 +41,9 @@ class FeedFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = FeedAdapter()
+        adapter = FeedAdapter { messageId ->
+            viewModel.toggleLike(messageId)
+        }
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
     }
@@ -49,6 +51,26 @@ class FeedFragment : Fragment() {
     private fun setupSwipeRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.loadMessages()
+        }
+    }
+
+    private val requestPermissionsLauncher =
+        registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            // Handle permissions granted/rejected
+        }
+
+    private fun checkPermissions() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionsLauncher.launch(
+                arrayOf(
+                    android.Manifest.permission.POST_NOTIFICATIONS,
+                    android.Manifest.permission.READ_CONTACTS
+                )
+            )
+        } else {
+            requestPermissionsLauncher.launch(
+                arrayOf(android.Manifest.permission.READ_CONTACTS)
+            )
         }
     }
 
