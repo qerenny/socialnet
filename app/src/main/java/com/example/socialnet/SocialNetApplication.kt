@@ -3,8 +3,8 @@ package com.example.socialnet
 import android.app.Application
 import androidx.room.Room
 import com.example.socialnet.data.api.ApiService
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.socialnet.data.db.AppDatabase
 import com.example.socialnet.data.repository.MessageRepository
@@ -43,12 +43,14 @@ class SocialNetApplication : Application() {
     }
 
     private fun setupWorker() {
-        val syncRequest = PeriodicWorkRequestBuilder<SyncWorker>(15, TimeUnit.MINUTES)
+        // Enqueue the first one-time request immediately (or with small delay)
+        // Subsequent requests will be chained by the worker itself
+        val syncRequest = OneTimeWorkRequestBuilder<SyncWorker>()
             .build()
 
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "SyncWork",
-            ExistingPeriodicWorkPolicy.KEEP,
+        WorkManager.getInstance(this).enqueueUniqueWork(
+            "SyncWorkRecursive",
+            ExistingWorkPolicy.KEEP, // If already running/enqueued, don't replace
             syncRequest
         )
     }

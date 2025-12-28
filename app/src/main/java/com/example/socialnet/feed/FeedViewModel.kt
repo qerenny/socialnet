@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.socialnet.data.db.MessageEntity
 import com.example.socialnet.data.repository.MessageRepository
@@ -11,8 +12,7 @@ import kotlinx.coroutines.launch
 
 class FeedViewModel(private val repository: MessageRepository) : ViewModel() {
 
-    private val _messages = MutableLiveData<List<MessageEntity>>()
-    val messages: LiveData<List<MessageEntity>> = _messages
+    val messages: LiveData<List<MessageEntity>> = repository.messages.asLiveData()
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -29,7 +29,7 @@ class FeedViewModel(private val repository: MessageRepository) : ViewModel() {
             _isLoading.value = true
             _error.value = null
             try {
-                _messages.value = repository.getMessages()
+                repository.refreshMessages()
             } catch (e: Exception) {
                 _error.value = e.message ?: "Unknown error"
             } finally {
@@ -39,21 +39,12 @@ class FeedViewModel(private val repository: MessageRepository) : ViewModel() {
     }
 
     fun toggleLike(messageId: Int) {
-        val currentList = _messages.value ?: return
+        val currentList = messages.value ?: return
         val message = currentList.find { it.id == messageId } ?: return
 
         viewModelScope.launch {
             repository.toggleLike(messageId, message.isLiked)
-
-            // Optimistically update the UI or reload
-            // Ideally we would observe a DB stream, but for now let's update the live data manually or reload
-            // To be simple and robust: reload from DB (which is fast) or update list locally
-
-            // Local update for immediate feedback
-            val updatedList = currentList.map {
-                if (it.id == messageId) it.copy(isLiked = !message.isLiked) else it
-            }
-            _messages.value = updatedList
+            // No need to manually update _messages, the repository Flow will emit the change
         }
     }
 }

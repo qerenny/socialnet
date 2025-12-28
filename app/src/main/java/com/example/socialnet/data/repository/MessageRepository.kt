@@ -10,12 +10,16 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 import kotlin.random.Random
 
+import kotlinx.coroutines.flow.Flow
+
 class MessageRepository(
     private val apiService: ApiService,
     private val messageDao: MessageDao
 ) {
 
-    suspend fun getMessages(): List<MessageEntity> = withContext(Dispatchers.IO) {
+    val messages: Flow<List<MessageEntity>> = messageDao.getAllMessages()
+
+    suspend fun refreshMessages() = withContext(Dispatchers.IO) {
         try {
             // Fetch posts and users concurrently
             val postsDeferred = async { apiService.getPosts() }
@@ -28,7 +32,7 @@ class MessageRepository(
             val userMap = remoteUsers.associateBy { it.id }
 
             // Fetch existing local messages
-            val localMessagesList = messageDao.getAllMessages()
+            val localMessagesList = messageDao.getAllMessagesOneShot()
             val localMessagesMap = localMessagesList.associateBy { it.id }
 
             val entities = if (localMessagesList.isEmpty()) {
@@ -74,40 +78,17 @@ class MessageRepository(
                     )
                 }
 
-                // We return all local messages plus the new ones for the UI
-                // Note: localMessagesList already has timestamps from previous fetches.
+                // We combine for insertion.
                 localMessagesList + newEntities
             }
 
             if (entities.isNotEmpty()) {
-                // Using insertAll with REPLACE strategy allows us to add new ones and keep existing ones
-                // But wait, 'entities' contains EVERYTHING (if we are in the else block above, we combined local + new).
-                // If we insert all 'entities', we are re-inserting existing ones which is fine (REPLACE).
-
-                // Actually, for the 'else' block (incremental update), we only really need to insert the *new* ones into DB.
-                // But 'insertAll' with 'entities' (which is everything) ensures consistency.
-                // However, 'localMessagesList' already has correct 'isLiked' state.
-                // Re-mapping remotePosts in the initial logic wiped 'isLiked'.
-                // Here, I constructed 'entities' carefully:
-                // Case 1 (Empty): just 10 new ones.
-                // Case 2 (Not Empty): 'localMessagesList' (preserved state) + 'newEntities'.
-
-                // So inserting 'entities' is safe and correct.
                 messageDao.insertAll(entities)
             }
 
-            // Return the full list from the DB to be sure
-            return@withContext messageDao.getAllMessages()
         } catch (e: Exception) {
             android.util.Log.e("MessageRepository", "Error fetching messages", e)
-            val localData = messageDao.getAllMessages()
-            if (localData.isEmpty()) {
-                if (e is IOException) {
-                    return@withContext localData
-                }
-                throw e
-            }
-            return@withContext localData
+            // No return needed as we rely on Flow
         }
     }
 
