@@ -76,7 +76,14 @@ class FeedFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.messages.observe(viewLifecycleOwner) { messages ->
-            adapter.submitList(messages)
+            val layoutManager = binding.recyclerView.layoutManager as LinearLayoutManager
+            val isAtTop = layoutManager.findFirstCompletelyVisibleItemPosition() == 0
+
+            adapter.submitList(messages) {
+                if (isAtTop) {
+                    binding.recyclerView.scrollToPosition(0)
+                }
+            }
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->

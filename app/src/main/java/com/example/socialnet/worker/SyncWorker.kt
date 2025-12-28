@@ -10,9 +10,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.example.socialnet.R
 import com.example.socialnet.SocialNetApplication
+import java.util.concurrent.TimeUnit
 
 class SyncWorker(
     appContext: Context,
@@ -20,22 +24,38 @@ class SyncWorker(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        return try {
+        try {
             android.util.Log.d("SyncWorker", "Starting background sync")
             val app = applicationContext as SocialNetApplication
             val repository = app.repository
 
-            repository.getMessages()
+            repository.refreshMessages()
 
             showNotification()
 
             android.util.Log.d("SyncWorker", "Background sync success")
-            Result.success()
         } catch (e: Exception) {
             android.util.Log.e("SyncWorker", "Background sync failed", e)
             e.printStackTrace()
-            Result.retry()
+            // Even if failed, we probably want to schedule next one?
+            // Or return failure. For this task, let's keep retrying via scheduleNext.
+        } finally {
+            scheduleNextWork()
         }
+        return Result.success()
+    }
+
+    private fun scheduleNextWork() {
+        android.util.Log.d("SyncWorker", "Scheduling next sync in 5 seconds")
+        val nextRequest = OneTimeWorkRequestBuilder<SyncWorker>()
+            .setInitialDelay(5, TimeUnit.SECONDS)
+            .build()
+
+        WorkManager.getInstance(applicationContext).enqueueUniqueWork(
+            "SyncWorkRecursive",
+            ExistingWorkPolicy.REPLACE, // Replace current (which is finishing) with new future one
+            nextRequest
+        )
     }
 
     private fun showNotification() {

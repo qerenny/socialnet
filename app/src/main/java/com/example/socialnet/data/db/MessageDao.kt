@@ -8,7 +8,10 @@ import androidx.room.Query
 @Dao
 interface MessageDao {
     @Query("SELECT * FROM messages ORDER BY timestamp DESC")
-    suspend fun getAllMessages(): List<MessageEntity>
+    fun getAllMessages(): kotlinx.coroutines.flow.Flow<List<MessageEntity>>
+
+    @Query("SELECT * FROM messages ORDER BY timestamp DESC")
+    suspend fun getAllMessagesOneShot(): List<MessageEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(messages: List<MessageEntity>)
