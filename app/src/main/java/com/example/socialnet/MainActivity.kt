@@ -13,6 +13,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.socialnet.data.UserPreferences
 import com.example.socialnet.databinding.ActivityMainBinding
@@ -49,33 +51,18 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        setSupportActionBar(binding.toolbar)
+
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
-        binding.bottomAppBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.feedFragment -> {
-                    navController.navigate(R.id.feedFragment)
-                    true
-                }
-                R.id.profileFragment -> {
-                    navController.navigate(R.id.profileFragment)
-                    true
-                }
-                R.id.settingsFragment -> {
-                    navController.navigate(R.id.settingsFragment)
-                    true
-                }
-                else -> false
-            }
-        }
+        binding.bottomNavigation.setupWithNavController(navController)
 
-        binding.fab.setOnClickListener {
-            // Placeholder action or simple refresh logic
-            Toast.makeText(this, "FAB Clicked", Toast.LENGTH_SHORT).show()
-            // Optionally navigate to feed or refresh it
-            // navController.navigate(R.id.feedFragment)
-        }
+        // Handle Action Bar title updates automatically
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.feedFragment, R.id.profileFragment, R.id.settingsFragment)
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
 
         checkNotificationPermission()
     }

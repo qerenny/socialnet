@@ -10,5 +10,6 @@ data class MessageEntity(
     val body: String,
     val userName: String = "",
     val userAvatarColor: Int = 0,
-    val isLiked: Boolean = false
+    val isLiked: Boolean = false,
+    val timestamp: Long = System.currentTimeMillis()
 )

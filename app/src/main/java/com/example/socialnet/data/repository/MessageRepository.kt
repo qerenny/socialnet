@@ -42,7 +42,8 @@ class MessageRepository(
                         body = post.body,
                         userName = user?.name ?: "Unknown User",
                         userAvatarColor = generateRandomColor(post.userId),
-                        isLiked = false
+                        isLiked = false,
+                        timestamp = System.currentTimeMillis()
                     )
                 }
             } else {
@@ -68,11 +69,13 @@ class MessageRepository(
                         body = post.body,
                         userName = user?.name ?: "Unknown User",
                         userAvatarColor = generateRandomColor(post.userId),
-                        isLiked = false
+                        isLiked = false,
+                        timestamp = System.currentTimeMillis()
                     )
                 }
 
                 // We return all local messages plus the new ones for the UI
+                // Note: localMessagesList already has timestamps from previous fetches.
                 localMessagesList + newEntities
             }
 
