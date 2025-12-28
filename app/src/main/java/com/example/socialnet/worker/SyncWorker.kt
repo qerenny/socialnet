@@ -21,7 +21,6 @@ class SyncWorker(
 
     override suspend fun doWork(): Result {
         return try {
-            android.util.Log.d("SyncWorker", "Starting background sync")
             val app = applicationContext as SocialNetApplication
             val repository = app.repository
 
@@ -29,22 +28,25 @@ class SyncWorker(
 
             showNotification()
 
-            android.util.Log.d("SyncWorker", "Background sync success")
             Result.success()
         } catch (e: Exception) {
-            android.util.Log.e("SyncWorker", "Background sync failed", e)
             e.printStackTrace()
             Result.retry()
         }
     }
 
     private fun showNotification() {
-        android.util.Log.d("SyncWorker", "Attempting to show notification")
+        if (ActivityCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
 
         val channelId = "sync_channel"
         val notificationId = 1
 
-        // Create channel first (needed for permission check on O+ sometimes, but definitely before notify)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Sync Channel"
             val descriptionText = "Notifications for data sync"
@@ -57,17 +59,6 @@ class SyncWorker(
             notificationManager.createNotificationChannel(channel)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ActivityCompat.checkSelfPermission(
-                    applicationContext,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                android.util.Log.w("SyncWorker", "Missing POST_NOTIFICATIONS permission")
-                return
-            }
-        }
-
         val builder = NotificationCompat.Builder(applicationContext, channelId)
             .setSmallIcon(android.R.drawable.ic_popup_sync)
             .setContentTitle("SocialNet")
@@ -75,6 +66,5 @@ class SyncWorker(
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
         NotificationManagerCompat.from(applicationContext).notify(notificationId, builder.build())
-        android.util.Log.d("SyncWorker", "Notification shown")
     }
 }
