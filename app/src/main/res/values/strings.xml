@@ -13,6 +13,8 @@
     <string name="profile_birthday_label">Birthday</string>
     <string name="profile_name_value">Иван Иванов</string>
     <string name="profile_email_value">ivan@example.com</string>
+    <string name="action_edit_profile">Edit Profile</string>
+    <string name="action_save_profile">Save Profile</string>
     <string name="settings_title">Настройки</string>
     <string name="dark_theme_label">Тёмная тема</string>
 </resources>

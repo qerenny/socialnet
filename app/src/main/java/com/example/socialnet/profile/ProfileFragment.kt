@@ -59,25 +59,20 @@ class ProfileFragment : Fragment() {
 
         defaultSpinnerBackground = binding.profileStatusSpinner.background
 
-        setupToolbar()
         setupSpinner()
+        setupFab()
         setupListeners()
         observeViewModel()
     }
 
-    private fun setupToolbar() {
-        binding.profileToolbar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.action_edit -> {
-                    viewModel.setEditing(true)
-                    true
-                }
-                R.id.action_save -> {
-                    viewModel.saveProfile()
-                    viewModel.setEditing(false)
-                    true
-                }
-                else -> false
+    private fun setupFab() {
+        binding.fabEditProfile.setOnClickListener {
+            val isEditing = viewModel.isEditing.value == true
+            if (isEditing) {
+                viewModel.saveProfile()
+                viewModel.setEditing(false)
+            } else {
+                viewModel.setEditing(true)
             }
         }
     }
@@ -154,20 +149,26 @@ class ProfileFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.isEditing.observe(viewLifecycleOwner) { isEditing ->
-            val menu = binding.profileToolbar.menu
-            val editItem = menu.findItem(R.id.action_edit)
-            val saveItem = menu.findItem(R.id.action_save)
-
-            if (editItem != null && saveItem != null) {
-                editItem.isVisible = !isEditing
-                saveItem.isVisible = isEditing
-            }
-
             binding.profileNameInput.isEnabled = isEditing
             binding.profileBioInput.isEnabled = isEditing
             binding.profileUsernameInput.isEnabled = isEditing
 
             binding.profileStatusSpinner.isEnabled = isEditing
+
+            // Animate FAB and change icon
+            binding.fabEditProfile.animate()
+                .rotationBy(360f)
+                .setDuration(300)
+                .withEndAction {
+                    if (isEditing) {
+                        binding.fabEditProfile.setImageResource(R.drawable.ic_check)
+                        binding.fabEditProfile.contentDescription = getString(R.string.action_save_profile)
+                    } else {
+                        binding.fabEditProfile.setImageResource(R.drawable.ic_edit)
+                        binding.fabEditProfile.contentDescription = getString(R.string.action_edit_profile)
+                    }
+                }
+                .start()
 
             if (isEditing) {
                 binding.profileStatusSpinner.background = defaultSpinnerBackground
