@@ -91,7 +91,7 @@ class SyncWorker(
         val builder = NotificationCompat.Builder(applicationContext, channelId)
             .setSmallIcon(android.R.drawable.ic_popup_sync)
             .setContentTitle("SocialNet")
-            .setContentText("Новые данные получены")
+            .setContentText("New data received")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
         NotificationManagerCompat.from(applicationContext).notify(notificationId, builder.build())

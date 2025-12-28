@@ -38,7 +38,7 @@
                     android:textSize="40sp"
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnPrimaryContainer"
-                    tools:text="ИИ" />
+                    tools:text="JD" />
             </FrameLayout>
 
             <!-- Name -->
@@ -55,7 +55,7 @@
                 android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
                 android:textColor="?attr/colorOnSurface"
                 android:textStyle="bold"
-                tools:text="Иван Иванов"/>
+                tools:text="John Doe"/>
 
             <!-- Status -->
             <Spinner
@@ -83,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textMultiLine"
                     android:minLines="1"
-                    android:hint="Тут будет твое описание"
+                    android:hint="Your bio will be here"
                     android:enabled="false"
                     android:background="@android:color/transparent"
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
@@ -126,7 +126,7 @@
                     android:paddingTop="8dp"
                     android:paddingBottom="4dp"
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                    android:hint="Тут будет твой день рождения"
+                    android:hint="Your birthday will be here"
                     />
 
                 <TextView
